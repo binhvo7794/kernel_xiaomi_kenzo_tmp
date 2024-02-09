@@ -964,3 +964,4 @@ int plugin_clip_init(struct plugin_clip *p);
 void plugin_interface_wdg_init(struct plugin_wdg *p);
 
 #endif/* __LINUX_ATMEL_MXT_PLUG */
+

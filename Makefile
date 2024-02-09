@@ -2,7 +2,7 @@ VERSION = 3
 PATCHLEVEL = 10
 SUBLEVEL = 108
 EXTRAVERSION =
-NAME = ShineLotus
+NAME = GigglyBits-Kurnal
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"

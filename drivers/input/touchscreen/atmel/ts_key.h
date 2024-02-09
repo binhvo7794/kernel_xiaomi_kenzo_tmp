@@ -16,3 +16,4 @@ struct mxt_virtual_key_space {
 struct kobject *create_virtual_key_object(struct device *dev);
 
 #endif
+

@@ -28,6 +28,7 @@ dtb-$(CONFIG_ARCH_MSM8974) += msm8974-v1-cdp.dtb \
 	msm8974pro-ac-pm8941-liquid.dtb \
 	msm8974pro-ac-pm8941-mtp.dtb \
 	msm8974pro-ac-pma8084-pm8941-mtp.dtb
+
 dtb-$(CONFIG_ARCH_MSM8909) += msm8909-sim.dtb \
 	msm8909-rumi.dtb \
 	msm8909-qrd-skua.dtb \
@@ -65,14 +66,11 @@ dtb-$(CONFIG_ARCH_MSM8909) += msm8909-sim.dtb \
 	msm8208-1gb-rcm.dtb \
 	msm8208-qhd-cdp.dtb \
 	msm8208-qhd-rcm.dtb
-ifeq ($(CONFIG_MACH_XIAOMI_HYDROGEN),y)
-dtb-$(CONFIG_ARCH_MSM8916) += hydrogen-msm8956-mtp.dtb \
-	hydrogen-msm8956-v1.1-mtp.dtb \
-	hydrogen-msm8976-mtp.dtb \
-	hydrogen-msm8976-v1.1-mtp.dtb
-else ifeq ($(CONFIG_MACH_XIAOMI_KENZO),y)
-dtb-$(CONFIG_ARCH_MSM8916) += kenzo-msm8956-mtp.dtb
+	
+ifeq ($(CONFIG_MACH_XIAOMI_KENZO),y)
+dtb-$(CONFIG_ARCH_MSM8916) += msm8956-mtp-kenzo.dtb
 else
+	
 dtb-$(CONFIG_ARCH_MSM8916) += msm8916-sim.dtb \
 	msm8916-rumi.dtb \
 	msm8916-cdp.dtb \
@@ -172,6 +170,7 @@ dtb-$(CONFIG_ARCH_MSM8916) += msm8916-sim.dtb \
 	msm8929-qrd-skulb.dtb \
 	msm8929-cdp-jdi.dtb
 endif
+
 dtb-$(CONFIG_ARCH_MSM8226) += msm8226-sim.dtb \
 	msm8226-fluid.dtb \
 	msm8226-v1-cdp.dtb \
@@ -217,6 +216,7 @@ dtb-$(CONFIG_ARCH_MSM8226) += msm8226-sim.dtb \
 	apq8026-v2-720p-mtp.dtb \
 	apq8026-v2-320p-w-mtp.dtb \
 	apq8026-v2-1080p-mtp.dtb
+
 dtb-$(CONFIG_ARCH_MSM8610) += msm8610-rumi.dtb \
 	msm8610-v1-cdp.dtb \
 	msm8610-v2-cdp.dtb \
@@ -227,14 +227,17 @@ dtb-$(CONFIG_ARCH_MSM8610) += msm8610-rumi.dtb \
 	msm8610-v1-qrd-skuab.dtb \
 	msm8610-v2-qrd-skuaa.dtb \
 	msm8610-v2-qrd-skuab.dtb
+
 dtb-$(CONFIG_ARCH_FSM9900) += fsm9900-rumi.dtb \
 	fsm9900-cdp.dtb \
 	fsm9900-mtp-v1.0.dtb \
 	fsm9900-mtp-v1.1.dtb \
 	fsm9900-mtp-v2.0.dtb
+
 dtb-$(CONFIG_ARCH_FSM9010) += fsm9010-rumi.dtb \
 	fsm9010-v1.0-mtp.dtb  \
 	fsm9010-v1.0-cdp.dtb
+
 dtb-$(CONFIG_ARCH_MDM9630) += mdm9630-v1-cdp.dtb \
 	mdm9630-v1-mtp.dtb \
 	mdm9630-v2-cdp.dtb \
@@ -243,15 +246,19 @@ dtb-$(CONFIG_ARCH_MDM9630) += mdm9630-v1-cdp.dtb \
 	mdm9630-v2-gf-cdp.dtb  \
 	mdm9630-v2-tsmc-mtp.dtb \
 	mdm9630-v2-gf-mtp.dtb
+
 dtb-$(CONFIG_ARCH_MDMCALIFORNIUM) += mdmcalifornium-sim.dtb \
 	mdmcalifornium-rumi.dtb
+
 dtb-$(CONFIG_ARCH_MDM9640) += mdm9640-v1-emmc-cdp.dtb \
 	mdm9640-v1-nand-cdp.dtb \
 	mdm9640-v1-mtp.dtb \
 	mdm9640-v2-emmc-cdp.dtb \
 	mdm9640-v2-nand-cdp.dtb \
 	mdm9640-v2-mtp.dtb
+
 dtb-$(CONFIG_ARCH_MSMVPIPA) += msmvpipa-sim.dtb
+
 dtb-$(CONFIG_ARCH_APQ8084) += apq8084-v1.0-old-pwr-grid-liquid.dtb \
 	apq8084-v1.1-old-pwr-grid-liquid.dtb \
 	apq8084-v1.1-liquid.dtb \
@@ -279,6 +286,7 @@ dtb-$(CONFIG_ARCH_APQ8084) += apq8084-v1.0-old-pwr-grid-liquid.dtb \
 	apq8084-v1.1-old-pwr-grid-mdm9x35-alt-cdp.dtb \
 	apq8084-v1.1-mdm9x35-alt-cdp.dtb \
 	apq8084-v1.1-sbc.dtb
+
 dtb-$(CONFIG_ARCH_MSM8994) += msm8994-v1-sim.dtb \
 	msm8994-rumi.dtb \
 	msm8994-v1-cdp.dtb \
@@ -325,6 +333,7 @@ dtb-$(CONFIG_ARCH_MSM8992) += msm8992-sim.dtb \
 dtb-$(CONFIG_ARCH_MDMFERMIUM) += mdmfermium-rumi.dtb
 
 DTB_NAMES := $(subst $\",,$(CONFIG_BUILD_ARM_APPENDED_DTB_IMAGE_NAMES))
+
 ifneq ($(DTB_NAMES),)
 DTB_LIST := $(addsuffix .dtb,$(DTB_NAMES))
 else
@@ -337,7 +346,5 @@ endif
 
 $(obj)/../%.dtb: $(src)/%.dts FORCE
 	$(call if_changed_dep,dtc)
-
 dtbs: $(addprefix $(obj)/../,$(DTB_LIST))
-
 clean-files := *.dtb

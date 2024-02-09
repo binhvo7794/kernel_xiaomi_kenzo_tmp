@@ -159,3 +159,4 @@ static inline void board_free_irq(const struct mxt_platform_data *pdata, unsigne
 }
 
 #endif /* __LINUX_ATMEL_MXT_TS_PLATFORM_H */
+

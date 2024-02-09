@@ -64,3 +64,4 @@ struct mxt_platform_data {
 };
 
 #endif /* __LINUX_ATMEL_MXT_TS_H */
+

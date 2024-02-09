@@ -606,3 +606,4 @@ void plugin_interface_wdg_init(struct plugin_wdg *p)
 	memcpy(p, &mxt_plugin_wdg_if, sizeof(struct plugin_wdg));
 }
 
+

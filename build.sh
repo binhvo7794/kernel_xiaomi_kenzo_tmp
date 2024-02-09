@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Custom build script for ShineLotus Kernel
+# Custom build script for Optimus Kernel
 
 # Constants
 green='\033[01;32m'
@@ -16,7 +16,7 @@ KERNEL_DIR=$PWD
 Anykernel_DIR=$KERNEL_DIR/AnyKernel3/
 DATE=$(date +"%d%m%Y")
 TIME=$(date +"-%H.%M.%S")
-KERNEL_NAME="Bloss-ShineLotus"
+KERNEL_NAME="Optimus-Kernel"
 DEVICE="-kenzo-"
 FINAL_ZIP="$KERNEL_NAME""$DEVICE""$DATE"
 
@@ -31,19 +31,19 @@ rm -rf arch/arm64/boot/Image.gz
 rm -rf arch/arm64/boot/Image.gz-dtb
 
 # Export few variables
-export KBUILD_BUILD_USER="Magicxavi"
-export KBUILD_BUILD_HOST="Pornhub"
-export CROSS_COMPILE=/home/magicxavi/havoc11/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+export KBUILD_BUILD_USER="NotDheeraj06"
+export KBUILD_BUILD_HOST="Archlinux"
+export CROSS_COMPILE=aarch64-linux-
 export ARCH="arm64"
 export USE_CCACHE=1
 
 echo -e "$green***********************************************"
-echo  "           Compiling ShineLotus Kernel                    "
+echo  "           Compiling Optimus Kernel                    "
 echo -e "***********************************************"
 
 # Finally build it
 make clean && make mrproper
-make lineageos_kenzo_defconfig
+make kenzo_defconfig
 make -j$(nproc --all)
 
 echo -e "$yellow***********************************************"
