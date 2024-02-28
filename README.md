@@ -20,4 +20,5 @@
 
 ## Device Picture
 
-![Redmi Note 3](https://m.media-amazon.com/images/W/WEBP_402378-T2/images/I/71BqzgvxofL._SY879_.jpg "Redmi Note 3")
+![Xiaomi Redmi Note 3](https://akket.com/wp-content/uploads/2016/01/Redmi-Note-3-Pro.jpg "Xiaomi Redmi Note 3")
+
