@@ -1,74 +1,104 @@
 #!/bin/bash
 
-# Custom build script for Optimus Kernel
+#
+# Configure defualt value:
+# CPU = use all cpu for build
+# CHAT = chat telegram for push build. use id.
+#
+CPU=$(nproc --all)
+SUBNAME="none"
 
-# Constants
-green='\033[01;32m'
-red='\033[01;31m'
-blink_red='\033[05;31m'
-cyan='\033[0;36m'
-yellow='\033[0;33m'
-blue='\033[0;34m'
-default='\033[0m'
+sudo apt-get install --no-install-recommends -y binutils git make bc bison openssl curl zip kmod cpio flex libelf-dev libssl-dev libtfm-dev libc6-dev device-tree-compiler ca-certificates python3 xz-utils libc6-dev aria2 build-essential ccache libssl-dev gcc-aarch64* gcc-arm* python2
 
-# Define variables
-KERNEL_DIR=$PWD
-Anykernel_DIR=$KERNEL_DIR/AnyKernel3/
-DATE=$(date +"%d%m%Y")
-TIME=$(date +"-%H.%M.%S")
-KERNEL_NAME="Optimus-Kernel"
-DEVICE="-kenzo-"
-FINAL_ZIP="$KERNEL_NAME""$DEVICE""$DATE"
+#
+# Add support cmd:
+# --cpu= for cpu used to compile
+# --key= for bot key used to push.
+# --name= for custom subname of kernel
+#
+config() {
 
-BUILD_START=$(date +"%s")
+    arg1=${1}
 
-# Cleanup before
-rm -rf $Anykernel_DIR/*zip
-rm -rf $Anykernel_DIR/Image.gz-dtb
-rm -rf arch/arm64/boot/Image
-rm -rf arch/arm64/boot/dts/qcom/kenzo-msm8956-mtp.dtb
-rm -rf arch/arm64/boot/Image.gz
-rm -rf arch/arm64/boot/Image.gz-dtb
+    case ${1} in
+        "--cpu="* )
+            CPU="--cpu="
+            CPU=${arg1#"$CPU"}
+        ;;
+        "--key="* )
+            KEY="--key="
+            KEY=${arg1#"$KEY"}
+        ;;
+        "--name="* )
+            SUBNAME="--name="
+            SUBNAME=${arg1#"$SUBNAME"}
+        ;;
+    esac
+}
 
-# Export few variables
-export KBUILD_BUILD_USER="NotDheeraj06"
-export KBUILD_BUILD_HOST="Archlinux"
-export CROSS_COMPILE=aarch64-linux-
-export ARCH="arm64"
-export USE_CCACHE=1
+arg1=${1}
+arg2=${2}
+arg3=${3}
 
-echo -e "$green***********************************************"
-echo  "           Compiling Optimus Kernel                    "
-echo -e "***********************************************"
+config ${1}
+config ${2}
+config ${3}
 
-# Finally build it
-make clean && make mrproper
-make kenzo_defconfig
-make -j$(nproc --all)
+echo "Config for resource of environment done."
+echo "CPU for build: $CPU"
+echo "NAME of kernel: $SUBNAME"
 
-echo -e "$yellow***********************************************"
-echo  "                 Zipping up                    "
-echo -e "***********************************************"
+# Clean stuff
+if [ -f "out/arch/arm64/boot/Image.gz-dtb" ]; then
+    rm -rf "out/arch/arm64/boot/Image.gz-dtb"
+fi
 
-# Create the flashable zip
-cp arch/arm64/boot/Image.gz-dtb $Anykernel_DIR
-cd $Anykernel_DIR
-zip -r9 $FINAL_ZIP.zip * -x .git README.md *placeholder
+# start build date
+DATE=$(date +"%Y%m%d-%H%M")
 
-echo -e "$cyan***********************************************"
-echo  "            Cleaning up the mess created               "
-echo -e "***********************************************$default"
+# Compiler type
+TOOLCHAIN_DIRECTORY="tc"
 
-# Cleanup again
-cd ../
-rm -rf $Anykernel_DIR/Image.gz-dtb
-rm -rf arch/arm64/boot/Image
-rm -rf arch/arm64/boot/dts/qcom/kenzo-msm8956-mtp.dtb
-rm -rf arch/arm64/boot/Image.gz
-rm -rf arch/arm64/boot/Image.gz-dtb
-make clean && make mrproper
+# Build defconfig
+DEFCONFIG="kenzo_defconfig"
 
-# Build complete
-BUILD_END=$(date +"%s")
-DIFF=$(($BUILD_END - $BUILD_START))
-echo -e "$green Build completed in $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.$default"
+# Check for compiler
+if [ ! -d "$TOOLCHAIN_DIRECTORY" ]; then
+    mkdir $TOOLCHAIN_DIRECTORY
+    git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 $TOOLCHAIN_DIRECTORY/gcc-64
+    git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 $TOOLCHAIN_DIRECTORY/gcc-32
+fi
+
+
+#
+# Build start with clang
+#
+PATH="$(pwd)/$TOOLCHAIN_DIRECTORY/gcc-64/bin:$(pwd)/$TOOLCHAIN_DIRECTORY/gcc-32/bin:${PATH}"
+make ARCH=arm64 $DEFCONFIG
+make -j$CPU ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu-
+
+
+if [ $SUBNAME == "none" ]; then
+    SUBNAME=$DATE
+fi
+
+cp arch/arm64/boot/Image.gz-dtb AnyKernel3
+curl bashupload.com -T arch/arm64/boot/Image.gz-dtb
+cd AnyKernel3
+zip -r9 ../Kenzo-$SUBNAME.zip * -x .git README.md *placeholder
+cd ..
+rm -rf anykernel
+echo "The path of the kernel.zip is: $(pwd)/Rave-$SUBNAME.zip"
+
+if [ ! $KEY == "none" ]; then
+    curl -F chat_id="$CHAT" \
+        -F caption="-Keep Rave" \
+        -F document=@"Kenzo-$SUBNAME.zip" \
+        https://api.telegram.org/bot"$KEY"/sendDocument
+
+    curl -s -X POST "https://api.telegram.org/bot"${1}"/sendMessage" \
+	    -d chat_id="$CHAT" \
+	    -d "disable_web_page_preview=true" \
+	    -d "parse_mode=html" \
+	    -d text="<b>Branch</b>: <code>$(git rev-parse --abbrev-ref HEAD)</code>%0A<b>Last Commit</b>: <code>$(git log --pretty=format:'%s' -1)</code>%0A<b>Kernel Version</b>: <code>$(make kernelversion)</code>"
+fi
